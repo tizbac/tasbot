@@ -1,0 +1,7 @@
+The config file should be like this
+
+serveraddr=spring.clan-sy.com;
+serverport=8200;
+plugins=pluginnames;
+password=password; --- Account password not encoded
+
