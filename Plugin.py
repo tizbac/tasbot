@@ -3,7 +3,13 @@ import sys
 import traceback
 class plghandler:
 	plugins = dict()
+	app = ""
+	def __init__(self,main):
+		self.app = main
 	def addplugin(self,name,tasc):
+		if name in self.plugins:
+			bad("Plugin %s is already loaded" % name)
+			return
 		try:
 			code = __import__(name)
 		except:
@@ -11,7 +17,6 @@ class plghandler:
 			traceback.print_exc(file=sys.stdout)
 			print '-'*60
 			error("Cannot load plugin   "+name)
-		
 			return
 		
 		self.plugins.update([(name,code.Main())])
@@ -21,6 +26,61 @@ class plghandler:
 		try:
 			if "onload" in dir(self.plugins[name]):
 				self.plugins[name].onload(tasc)
+		except:
+			error("Cannot load plugin   "+name)
+			print '-'*60
+			traceback.print_exc(file=sys.stdout)
+			print '-'*60
+			return
+		loaded("Plugin " + name)
+	def unloadplugin(self,name):
+		if not name in self.plugins:
+			error("Plugin %s not loaded"%name)
+			return
+		try:
+			if "ondestroy" in dir(self.plugins[name]):
+				self.plugins[name].ondestroy()
+			self.plugins.pop(name)
+			notice("%s Unloaded" % name)
+		except:
+			error("Cannot unload plugin   "+name)
+			error("Use forceunload to remove it anyway")
+			print '-'*60
+			traceback.print_exc(file=sys.stdout)
+			print '-'*60
+	def forceunloadplugin(self,name,tasc):
+		if not name in self.plugins:
+			error("Plugin %s not loaded"%name)
+			return
+		self.plugins.pop(name)
+		bad("%s Unloaded(Forced)" % name)
+	def reloadplugin(self,name):
+		if not name in self.plugins:
+			error("Plugin %s not loaded"%name)
+			return
+		try:
+			if "ondestroy" in dir(self.plugins[name]):
+				self.plugins[name].ondestroy()
+			notice("%s Unloaded" % name)
+		except:
+			error("Cannot unload plugin   "+name)
+			error("Use forceunload to remove it anyway")
+			print '-'*60
+			traceback.print_exc(file=sys.stdout)
+			print '-'*60
+		try:
+			code = reload(sys.modules[name])
+		except:
+			error("Cannot reload plugin %s!" % name)
+			return
+		
+		self.plugins.update([(name,code.Main())])
+		self.plugins[name].sock = self.app.tasclient.sock
+		#print "Pluging %s has %s functions" % (name,str(dir(self.plugins[name])))
+		
+		try:
+			if "onload" in dir(self.plugins[name]):
+				self.plugins[name].onload(self.app.tasclient)
 		except:
 			error("Cannot load plugin   "+name)
 			print '-'*60
@@ -89,6 +149,31 @@ class plghandler:
 				traceback.print_exc(file=sys.stdout)
 				print '-'*60
 	def onsaidprivate(self,user,message):
+		args = message.split(" ")
+		if args[0].lower() == "!unloadplugin" and user in self.app.admins and len(args) == 2:
+			try:
+				self.unloadplugin(args[1])
+			except:
+				bad("Unloadplugin failed")
+				print '-'*60
+				traceback.print_exc(file=sys.stdout)
+				print '-'*60
+		if args[0].lower() == "!loadplugin" and user in self.app.admins and len(args) == 2:
+			try:
+				self.addplugin(args[1],self.app.tasclient)
+			except:
+				bad("addplugin failed")
+				print '-'*60
+				traceback.print_exc(file=sys.stdout)
+				print '-'*60
+		if args[0].lower() == "!reloadplugin" and user in self.app.admins and len(args) == 2:
+			try:
+				self.reloadplugin(args[1])
+			except:
+				bad("Unloadplugin failed")
+				print '-'*60
+				traceback.print_exc(file=sys.stdout)
+				print '-'*60
 		for plugin in self.plugins:
 			try:
 				if "onsaidprivate" in dir(self.plugins[plugin]):

@@ -58,9 +58,10 @@ class MainApp:
 		self.er = 1
 		raise SystemExit(0)
 	def run(self,configfile,register=False,verbose=False):
-		self.ph = Plugin.plghandler()
+		self.ph = Plugin.plghandler(self)
 		self.configfile = configfile
 		self.config = ParseConfig.readconfigfile(configfile)
+		self.admins = ParseConfig.parselist(self.config["admins"],",")
 		self.verbose = verbose
 		self.tasclient = Client.tasclient(self)
 		

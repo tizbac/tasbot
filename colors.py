@@ -7,9 +7,13 @@ purple = "\033[21;35m"
 cyan = "\033[21;36m"
 def loaded(t):
 	print blue+" [LOADED] "+t+normal
+def reloaded(t):
+	print purple+" [RELOADED] "+t+normal
 def notice(t):
-	print yellow+" [NOTICE] "+t+normal
+	print cyan+" [NOTICE] "+t+normal
 def error(t):
 	print red+" [ERROR ] "+t+normal
 def good(t):
 	print green+" [ GOOD ] "+t+normal
+def bad(t):
+	print yellow+" [ BAD  ] "+t+normal

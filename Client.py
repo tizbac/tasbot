@@ -42,6 +42,8 @@ def parsecommand(cl,c,args,events,sock):
 		if c == "PONG":
 			cl.lpo = time.time()
 			events.onpong()
+		if c == "SAIDPRIVATE" and len(args) >= 2:
+			events.onsaidprivate(args[0],' '.join(args[1:]))
 def receive(cl,socket,events): #return commandname & args
 	buf = ""
 	try:
