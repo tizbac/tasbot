@@ -7,6 +7,7 @@ import time
 import ParseConfig
 import thread
 import Plugin
+import traceback
 from colors import *
 import Client
 import binascii
@@ -98,5 +99,7 @@ except KeyboardInterrupt:
 	exit(0)
 except:
 	error("parsing command line")
-			
+	print '-'*60
+        traceback.print_exc(file=sys.stdout)
+	print '-'*60
 	
