@@ -1,8 +1,23 @@
 from colors import *
 import sys
 import traceback
+import inspect
+import ctypes
+def _async_raise(tid, exctype):
+    '''Raises an exception in the threads with id tid'''
+    if not inspect.isclass(exctype):
+        raise TypeError("Only types can be raised (not instances)")
+    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype))
+    if res == 0:
+        raise ValueError("invalid thread id")
+    elif res != 1:
+        # """if it returns a number greater than one, you're in trouble, 
+        # and you should call it again with exc=NULL to revert the effect"""
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, 0)
+        raise SystemError("PyThreadState_SetAsyncExc failed")
 class plghandler:
 	plugins = dict()
+	pluginthreads = dict()
 	app = ""
 	def __init__(self,main):
 		self.app = main
@@ -20,6 +35,9 @@ class plghandler:
 			return
 		
 		self.plugins.update([(name,code.Main())])
+		self.pluginthreads.update([(name,[])])
+		
+		self.plugins[name].threads = self.pluginthreads[name]
 		self.plugins[name].sock = tasc.sock
 		#print "Pluging %s has %s functions" % (name,str(dir(self.plugins[name])))
 		
@@ -42,6 +60,10 @@ class plghandler:
 		try:
 			if "ondestroy" in dir(self.plugins[name]):
 				self.plugins[name].ondestroy()
+			notice("Killing any threads spawned by the plugin...")
+			for tid in self.pluginthreads[name]:
+				_async_raise(tid,SystemExit)
+			self.pluginthreads.pop(name)
 			self.plugins.pop(name)
 			notice("%s Unloaded" % name)
 		except:
@@ -75,8 +97,12 @@ class plghandler:
 		except:
 			error("Cannot reload plugin %s!" % name)
 			return
-		
+		notice("Killing any threads spawned by the plugin...")
+		for tid in self.pluginthreads[name]:
+			_async_raise(tid,SystemExit)
 		self.plugins.update([(name,code.Main())])
+		self.pluginthreads.update([(name,[])])
+		self.plugins[name].threads = self.pluginthreads[name]
 		self.plugins[name].sock = self.app.tasclient.sock
 		#print "Pluging %s has %s functions" % (name,str(dir(self.plugins[name])))
 		
