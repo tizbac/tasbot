@@ -104,6 +104,7 @@ class tasclient:
 				#print "Received data"
 				if result == 1:
 					error("SERVER: Timed out, reconnecting in 40 secs")
+					self.main.connected = False
 					if not self.fl.norecwait:
 						time.sleep(40.0)
 						self.fl.norecwait = False
@@ -115,6 +116,7 @@ class tasclient:
 					self.sock.settimeout(40)
 					self.sock.connect((self.lastserver,int(self.lastport)))
 					receive(self,self.sock,self.events)
+					self.main.connected = True
 			except SystemExit:
 				raise SystemExit(0)
 			except:
@@ -143,6 +145,7 @@ class tasclient:
 			except SystemExit:
 				raise SystemExit(0)
 			except:
+				self.main.connected = False
 				error("Cannot connect, retrying in 40 secs...")
 				print '-'*60
 				traceback.print_exc(file=sys.stdout)

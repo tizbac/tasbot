@@ -16,6 +16,7 @@ class MainApp:
 	er = 0
 	configfile = ""
 	reg = False
+	connected = False
 	def PingLoop(self):
 		while self.er == 0:
 			self.tasclient.ping()
@@ -37,6 +38,7 @@ class MainApp:
 		self.tasclient.events.oncommandfromserver = self.ph.oncommandfromserver
 		self.ph.onloggedin(socket)
 		self.ph.oncommandfromserver("ACCEPTED",[],self.tasclient.sock)
+		self.connected = True
 		good("Logged in")
 	def SaveConfig(self):
 		ParseConfig.writeconfigfile(self.configfile,self.config)

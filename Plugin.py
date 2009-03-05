@@ -26,6 +26,8 @@ class plghandler:
 		try:
 			if "onload" in dir(self.plugins[name]):
 				self.plugins[name].onload(tasc)
+			if "onloggedin" in dir(self.plugins[name]) and self.app.connected:
+				self.plugins[name].onloggedin(tasc.sock)
 		except:
 			error("Cannot load plugin   "+name)
 			print '-'*60
