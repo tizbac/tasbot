@@ -62,7 +62,7 @@ class MainApp:
 		raise SystemExit(0)
 	def ReloadConfig(self):
 		
-		self.config = ParseConfig.readconfigfile(configfile)
+		self.config = ParseConfig.readconfigfile(self.configfile)
 		self.admins = ParseConfig.parselist(self.config["admins"],",")
 	def run(self,configfile,register=False,verbose=False):
 		self.ph = Plugin.plghandler(self)
