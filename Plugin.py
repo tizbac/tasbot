@@ -178,6 +178,8 @@ class plghandler:
 				print '-'*60
 	def onsaidprivate(self,user,message):
 		args = message.split(" ")
+		if args[0].lower() == "!reloadconfig" and user in self.app.admins:
+			self.app.ReloadConfig()
 		if args[0].lower() == "!unloadplugin" and user in self.app.admins and len(args) == 2:
 			try:
 				self.unloadplugin(args[1])
