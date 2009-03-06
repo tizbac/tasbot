@@ -65,6 +65,7 @@ class MainApp:
 		self.config = ParseConfig.readconfigfile(self.configfile)
 		self.admins = ParseConfig.parselist(self.config["admins"],",")
 	def run(self,configfile,register=False,verbose=False):
+		self.cwd = os.getcwd()
 		self.ph = Plugin.plghandler(self)
 		self.configfile = configfile
 		self.config = ParseConfig.readconfigfile(configfile)
