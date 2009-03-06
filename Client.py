@@ -26,8 +26,8 @@ def parsecommand(cl,c,args,events,sock):
 			events.onmotd(" ".join(args))
 		if c == "ACCEPTED":
 			events.onloggedin(sock)
-		if c == "DENIED":
-			error("Login failed, trying to register...")
+		if c == "DENIED" and ' '.join(args).lower().count("already") == 0:
+			error("Login failed ( %s ), trying to register..." % ' '.join(args))
 			notice("Closing Connection")
 			sock.close()
 			cl.fl.register = True			
