@@ -27,7 +27,7 @@ class MainApp:
 			thread.start_new_thread(self.tasclient.mainloop,())
 			thread.start_new_thread(self.PingLoop,())
 			self.firstconnect = 0
-		#self.tasclient.events.onconnected = self.ph.onconnected 
+		
 		#self.tasclient.events.ondisconnected = self.ph.ondisconnected 
 		
 		self.tasclient.events.onmotd = self.ph.onmotd  
@@ -36,6 +36,8 @@ class MainApp:
 		self.tasclient.events.onsaidprivate = self.ph.onsaidprivate 
 		self.tasclient.events.onpong = self.ph.onpong 
 		self.tasclient.events.oncommandfromserver = self.ph.oncommandfromserver
+		self.tasclient.events.ondisconnected = self.ph.ondisconnected
+		
 		self.ph.onloggedin(socket)
 		self.ph.oncommandfromserver("ACCEPTED",[],self.tasclient.sock)
 		self.connected = True
@@ -76,7 +78,7 @@ class MainApp:
 		for p in ParseConfig.parselist(self.config["plugins"],","):
 			self.ph.addplugin(p,self.tasclient)
 		
-		
+		self.tasclient.events.onconnectedplugin = self.ph.onconnected 
 		self.tasclient.events.onconnected = self.Dologin
 		self.tasclient.events.onloggedin = self.onlogin
 		self.reg = register
@@ -103,6 +105,7 @@ except SystemExit:
 	raise SystemExit(0)
 except KeyboardInterrupt:
 	error("SIGINT, Exiting")
+	inst.ph.onexit()
 	exit(0)
 except:
 	error("parsing command line")

@@ -257,3 +257,27 @@ class plghandler:
 				print '-'*60
 				traceback.print_exc(file=sys.stdout)
 				print '-'*60
+	def onexit(self):
+	  for plugin in self.plugins:
+	    try:
+		    if "onexit" in dir(self.plugins[plugin]):
+			    self.plugins[plugin].onexit()
+	    except SystemExit:
+		    raise SystemExit(0)
+	    except:
+		    error("PLUGIN ERROR")
+		    print '-'*60
+		    traceback.print_exc(file=sys.stdout)
+		    print '-'*60
+	def ondisconnected(self):
+	  for plugin in self.plugins:
+	    try:
+		    if "ondisconnected" in dir(self.plugins[plugin]):
+			    self.plugins[plugin].ondisconnected()
+	    except SystemExit:
+		    raise SystemExit(0)
+	    except:
+		    error("PLUGIN ERROR")
+		    print '-'*60
+		    traceback.print_exc(file=sys.stdout)
+		    print '-'*60

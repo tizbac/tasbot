@@ -65,8 +65,10 @@ def receive(cl,socket,events): #return commandname & args
 class serverevents:
 	def onconnected(self):
 		good("Connected to TASServer")
+	def onconnectedplugin(self):
+		good("Connected to TASServer")
 	def ondisconnected(self):
-		print blue+"Disconnected"+normal
+		bad("Disconnected")
 	def onmotd(self,content):
 		print blue+"** MOTD ** "+content+normal
 	def onsaid(self,channel,user,message):
@@ -83,6 +85,8 @@ class serverevents:
 	def oncommandfromserver(self,command,args,socket):
 		#print yellow+"From Server: "+str(command)+" Args: "+str(args)+normal
 		pass
+	def onexit(self):
+	  pass
 class flags:
 	norecwait = False
 	register = False
@@ -103,6 +107,7 @@ class tasclient:
 				result = receive(self,self.sock,self.events)
 				#print "Received data"
 				if result == 1:
+					self.events.ondisconnected()
 					error("SERVER: Timed out, reconnecting in 40 secs")
 					self.main.connected = False
 					if not self.fl.norecwait:
@@ -117,6 +122,7 @@ class tasclient:
 					self.sock.connect((self.lastserver,int(self.lastport)))
 					receive(self,self.sock,self.events)
 					self.main.connected = True
+					self.events.onconnectedplugin()
 			except SystemExit:
 				raise SystemExit(0)
 			except:
@@ -136,6 +142,7 @@ class tasclient:
 				self.sock = socket(AF_INET,SOCK_STREAM)
 				self.sock.settimeout(40)
 				self.sock.connect((server,int(port)))
+				self.events.onconnectedplugin()
 				if self.main.reg:
 					notice("Registering nick")
 					self.main.Register(self.main.config["nick"],self.main.config["password"])
@@ -164,6 +171,7 @@ class tasclient:
 		self.sock = 0
 	def login(self,username,password,client,cpu):
 		notice("Trying to login with username %s " % (username))
+		print "LOGIN %s %s %i * %s\n" % (username,password,cpu,client)
 		try:
 			self.sock.send("LOGIN %s %s %i * %s\n" % (username,password,cpu,client))
 		except:
