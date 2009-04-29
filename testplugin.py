@@ -15,6 +15,7 @@ class Main:
 	  print "onsaidprivate(%s,%s)" % (str(user),str(message))
   def onloggedin(self,socket):
 	  print "onloggedin(%s)" % (str(socket))
+	  socket.send("JOIN main\n")
   def onpong(self):
 	  print "onpong()"
   def oncommandfromserver(self,command,args,socket):

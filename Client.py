@@ -9,6 +9,16 @@ import traceback
 def parsecommand(cl,c,args,events,sock):
 	if c.strip() != "":
 		events.oncommandfromserver(c,args,sock)
+		if c == "JOIN" and len(args) >= 1:
+			if not args[0] in cl.channels:
+				cl.channels.append(args[0])
+				good("Joined #"+args[0])
+		if c == "FORCELEAVECHANNEL" and len(args) >= 2:
+			if args[0] in cl.channels:
+				cl.channels.remove(args[0])
+				bad("I've have been kicked from #%s by <%s>" % (args[0],args[1]))
+			else:
+				error("I've been kicked from a channel that i haven't joined")
 		if c == "TASSERVER":
 			good("Connected to server")
 			
@@ -133,6 +143,7 @@ class tasclient:
 	def __init__(self,app):
 		self.events = serverevents()
 		self.main = app
+		self.channels = []
 	def connect(self,server,port):
 		self.lastserver = server
 		self.lastport = port
@@ -185,7 +196,14 @@ class tasclient:
 			self.sock.send("REGISTER %s %s\n" % (username,password))
 		except:
 			error("Cannot send register command")
-		
+	def leave(self,channel): #Leaves a channel
+		if channel in self.channels:
+			try:
+				self.sock.send("LEAVE %s\n" % channel)
+			except:
+				bad("Failed to send LEAVE command")
+		else:
+			bad("leave(%s) : Not in channel" % channel)
 	def ping(self):
 		if self.er == 1:
 			return
