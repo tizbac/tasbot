@@ -182,13 +182,14 @@ class tasclient:
 		self.sock = 0
 	def login(self,username,password,client,cpu):
 		notice("Trying to login with username %s " % (username))
-		print "LOGIN %s %s %i * %s\n" % (username,password,cpu,client)
+		#print "LOGIN %s %s %i * %s\n" % (username,password,cpu,client)
 		try:
 			self.sock.send("LOGIN %s %s %i * %s\n" % (username,password,cpu,client))
 		except:
 			error("Cannot send login command")
 		self.uname = username
 		self.password = password
+		self.channels = []
 		receive(self,self.sock,self.events)
 	def register(self,username,password):
 		try:
@@ -200,6 +201,7 @@ class tasclient:
 		if channel in self.channels:
 			try:
 				self.sock.send("LEAVE %s\n" % channel)
+				self.channels.remove(channel)
 			except:
 				bad("Failed to send LEAVE command")
 		else:
