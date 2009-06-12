@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from socket import *
 import string
 import re
@@ -16,7 +17,7 @@ def parsecommand(cl,c,args,events,sock):
 		if c == "FORCELEAVECHANNEL" and len(args) >= 2:
 			if args[0] in cl.channels:
 				cl.channels.remove(args[0])
-				bad("I've have been kicked from #%s by <%s>" % (args[0],args[1]))
+				bad("I've been kicked from #%s by <%s>" % (args[0],args[1]))
 			else:
 				error("I've been kicked from a channel that i haven't joined")
 		if c == "TASSERVER":
@@ -60,9 +61,12 @@ def receive(cl,socket,events): #return commandname & args
 		while not buf.strip("\r ").endswith("\n"):
 			#print "Receiving incomplete command..."
 			nbuf =  socket.recv(512)
-			if nbuf == "":
+			if len(nbuf) == 0:
 				return 1
 			buf += nbuf
+			if len(buf) > 1024*200:
+			  error("Buffer size exceeded!!!")
+			  return 1
 	except:
 		error("Connection Broken")
 		return 1 # Connection broken
