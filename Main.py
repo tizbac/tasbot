@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import sys
 import string
@@ -53,7 +54,7 @@ class MainApp:
 		m = md5.new()
 		m.update(self.config["password"])
 		phash = base64.b64encode(binascii.a2b_hex(m.hexdigest()))
-		self.tasclient.login(self.config["nick"],phash,"Newbot",2400)
+		self.tasclient.login(self.config["nick"],phash,"Newbot",2400,self.config["lanip"] if "lanip" in self.config else "*")
 	def Register(self,username,password):
 		m = md5.new()
 		m.update(self.config["password"])
