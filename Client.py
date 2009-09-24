@@ -7,6 +7,24 @@ import utilities
 from colors import *
 import sys
 import traceback
+class User:
+        def __init__(self,username,id,country,cpu):
+                self.username = username
+                self.id = id
+                self.country = country
+                self.cpu = cpu
+                self.afk = False
+                self.ingame = False
+                self.mod = False
+                self.rank = 0
+                self.bot = False
+        def clientstatus(self,username,status):
+                self.afk = bool(getaway(int(status)))
+                self.ingame = bool(getingame(int(status)))
+                self.mod = bool(getmod(int(status)))
+                self.bot = bool(getbot(int(status)))
+                self.rank = getrank(status)-1
+                
 def parsecommand(cl,c,args,events,sock):
 	if c.strip() != "":
 		events.oncommandfromserver(c,args,sock)
@@ -55,6 +73,30 @@ def parsecommand(cl,c,args,events,sock):
 			events.onpong()
 		if c == "SAIDPRIVATE" and len(args) >= 2:
 			events.onsaidprivate(args[0],' '.join(args[1:]))
+		if c == "ADDUSER":
+                        if len(args) == 4:#Account id
+                                cl.users[args[0]] = User(args[0],int(args[3]),args[1],int(args[2]))
+                        elif len(args) == 3:
+                                cl.users[args[0]] = User(args[0],int(-1),args[1],int(args[2]))
+                        else:
+                                error("Invalid ADDUSER Command from server: %s %s"%(c,str(args)))
+                if c == "REMOVEUSER":
+                        if len(args) == 1:
+                                if args[0] in cl.users:
+                                        del cl.users[args[0]]
+                                else:
+                                        error("Invalid REMOVEUSER Command: no such user"+args[0])
+                        else:
+                                error("Invalid REMOVEUSER Command: not enough arguments")
+                if c == "CLIENTSTATUS":
+                        if len(args) == 2:
+                                if args[0] in cl.users:
+                                        try:
+                                                cl.users[args[0]].clientstatus(int(args[1]))
+                                        except:
+                                                error("Malformed CLIENTSTATUS")
+                                else:
+                                        error("Invalid CLIENTSTATUS: No such user")
 def receive(cl,socket,events): #return commandname & args
 	buf = ""
 	try:
@@ -104,13 +146,15 @@ class serverevents:
 class flags:
 	norecwait = False
 	register = False
-	
+
+
 class tasclient:
 	sock = 0
 	fl = flags()
 	er = 0
 	lp = 0.0
 	lpo = 0.0
+	users = dict()
 	def mainloop(self):
 		while 1:
 			if self.er == 1:
@@ -188,7 +232,7 @@ class tasclient:
 		notice("Trying to login with username %s " % (username))
 		#print "LOGIN %s %s %i * %s\n" % (username,password,cpu,client)
 		try:
-			self.sock.send("LOGIN %s %s %i %s %s\n" % (username,password,cpu,lanip,client))
+			self.sock.send("LOGIN %s %s %i %s %s\t%s\n" % (username,password,cpu,lanip,client,"a"))
 		except:
 			error("Cannot send login command")
 		self.uname = username
