@@ -4,6 +4,7 @@ import string
 import re
 import time
 import utilities
+from utilities import *
 from colors import *
 import sys
 import traceback
@@ -18,7 +19,7 @@ class User:
                 self.mod = False
                 self.rank = 0
                 self.bot = False
-        def clientstatus(self,username,status):
+        def clientstatus(self,status):
                 self.afk = bool(getaway(int(status)))
                 self.ingame = bool(getingame(int(status)))
                 self.mod = bool(getmod(int(status)))
@@ -74,12 +75,18 @@ def parsecommand(cl,c,args,events,sock):
 		if c == "SAIDPRIVATE" and len(args) >= 2:
 			events.onsaidprivate(args[0],' '.join(args[1:]))
 		if c == "ADDUSER":
-                        if len(args) == 4:#Account id
-                                cl.users[args[0]] = User(args[0],int(args[3]),args[1],int(args[2]))
-                        elif len(args) == 3:
-                                cl.users[args[0]] = User(args[0],int(-1),args[1],int(args[2]))
-                        else:
+                        try:
+                                if len(args) == 4:#Account id
+                                        cl.users[args[0]] = User(args[0],int(args[3]),args[1],int(args[2]))
+                                        #notice(args[0]+":"+args[3])
+                                elif len(args) == 3:
+                                        cl.users[args[0]] = User(args[0],int(-1),args[1],int(args[2]))
+                                        #notice(args[0]+":"+"-1")
+                                else:
+                                        error("Invalid ADDUSER Command from server: %s %s"%(c,str(args)))
+                        except:
                                 error("Invalid ADDUSER Command from server: %s %s"%(c,str(args)))
+                                print traceback.format_exc()
                 if c == "REMOVEUSER":
                         if len(args) == 1:
                                 if args[0] in cl.users:
@@ -95,8 +102,10 @@ def parsecommand(cl,c,args,events,sock):
                                                 cl.users[args[0]].clientstatus(int(args[1]))
                                         except:
                                                 error("Malformed CLIENTSTATUS")
+                                                print traceback.format_exc()
                                 else:
                                         error("Invalid CLIENTSTATUS: No such user")
+                                
 def receive(cl,socket,events): #return commandname & args
 	buf = ""
 	try:
@@ -232,7 +241,7 @@ class tasclient:
 		notice("Trying to login with username %s " % (username))
 		#print "LOGIN %s %s %i * %s\n" % (username,password,cpu,client)
 		try:
-			self.sock.send("LOGIN %s %s %i %s %s\t%s\n" % (username,password,cpu,lanip,client,"a"))
+			self.sock.send("LOGIN %s %s %i %s %s\t0\t%s\n" % (username,password,cpu,lanip,client,"a"))
 		except:
 			error("Cannot send login command")
 		self.uname = username
