@@ -104,7 +104,7 @@ def parsecommand(cl,c,args,events,sock):
                                                 error("Malformed CLIENTSTATUS")
                                                 print traceback.format_exc()
                                 else:
-                                        error("Invalid CLIENTSTATUS: No such user")
+                                        error("Invalid CLIENTSTATUS: No such user <%s>" % args[0])
                                 
 def receive(cl,socket,events): #return commandname & args
 	buf = ""
