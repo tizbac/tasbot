@@ -45,6 +45,16 @@ class MainApp:
 		good("Logged in")
 	def SaveConfig(self):
 		ParseConfig.writeconfigfile(self.configfile,self.config)
+	def isAdmin(self,username):
+	        if username in self.admins:
+	                return True
+	        elif username in self.tasclient.users:
+	                if "#"+str(self.tasclient.users[username].id) in self.admins:
+	                        return True
+	                else:
+	                        return False
+	        else:
+	                return False
 	def Dologin(self):
 		if self.tasclient.fl.register:
 			notice("Not logging in because a registration is in progress")

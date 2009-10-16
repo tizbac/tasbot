@@ -175,6 +175,7 @@ class tasclient:
 				#print "Received data"
 				if result == 1:
 					self.events.ondisconnected()
+					self.users = dict()
 					error("SERVER: Timed out, reconnecting in 40 secs")
 					self.main.connected = False
 					if not self.fl.norecwait:
