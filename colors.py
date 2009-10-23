@@ -15,7 +15,7 @@ def loaded(t):
   if platform.system() == "Linux":
     print blue+" [LOADED] "+t+normal
   else:
-    w32setcolor(0x10)
+    w32setcolor(0x02)
     print " [LOADED] "+t
     w32setcolor(0x07)
 def reloaded(t):
@@ -29,7 +29,7 @@ def notice(t):
   if platform.system() == "Linux":
     print cyan+" [NOTICE] "+t+normal
   else:
-    w32setcolor(0x04)
+    w32setcolor(0x02|0x08)
     print " [LOADED] "+t
     w32setcolor(0x07)
 def error(t):
