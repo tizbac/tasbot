@@ -23,33 +23,33 @@ def reloaded(t):
     print purple+" [RELOADED] "+t+normal
   else:
     w32setcolor(0x02)
-    print " [LOADED] "+t
+    print " [RELOADED] "+t
     w32setcolor(0x07)
 def notice(t):
   if platform.system() == "Linux":
     print cyan+" [NOTICE] "+t+normal
   else:
     w32setcolor(0x02|0x08)
-    print " [LOADED] "+t
+    print " [NOTICE] "+t
     w32setcolor(0x07)
 def error(t):
   if platform.system() == "Linux":
     print red+" [ERROR ] "+t+normal
   else:
     w32setcolor(0x04|0x08)
-    print " [LOADED] "+t
+    print " [ERROR ] "+t
     w32setcolor(0x07)
 def good(t):
   if platform.system() == "Linux":
     print green+" [ GOOD ] "+t+normal
   else:
     w32setcolor(0x01|0x08)
-    print " [LOADED] "+t
+    print " [ GOOD ] "+t
     w32setcolor(0x07)
 def bad(t):
   if platform.system() == "Linux":
     print yellow+" [ BAD  ] "+t+normal
   else:
     w32setcolor(0x18)
-    print " [LOADED] "+t
+    print " [ BAD ] "+t
     w32setcolor(0x07)
