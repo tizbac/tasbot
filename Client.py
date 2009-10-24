@@ -19,6 +19,7 @@ class User:
                 self.mod = False
                 self.rank = 0
                 self.bot = False
+                self.battleid = -1
         def clientstatus(self,status):
                 self.afk = bool(getaway(int(status)))
                 self.ingame = bool(getingame(int(status)))
@@ -72,6 +73,18 @@ def parsecommand(cl,c,args,events,sock):
 		if c == "PONG":
 			cl.lpo = time.time()
 			events.onpong()
+		if c == "JOINEDBATTLE" and len(args) >= 2:
+			try:
+				cl.users[args[1]].battleid = int(args[0])
+			except:
+				error("Invalid JOINEDBATTLE Command from server: %s %s"%(c,str(args)))
+				print traceback.format_exc()
+		if c == "LEFTBATTLE" and len(args) >= 2:
+			try:
+				cl.users[args[1]].battleid = -1
+			except:
+				error("Invalid LEFTBATTLE Command from server: %s %s"%(c,str(args)))
+				print traceback.format_exc()
 		if c == "SAIDPRIVATE" and len(args) >= 2:
 			events.onsaidprivate(args[0],' '.join(args[1:]))
 		if c == "ADDUSER":
