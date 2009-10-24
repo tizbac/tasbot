@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import string
 import os
 from colors import *
@@ -30,11 +31,7 @@ def readconfigfile(filename):
 	good("Loaded config file %s succesfully, %i entries" % (filename,len(entries)))
 	return entries
 def writeconfigfile(filename,entries):
-	try:
-		os.remove(filename)
-	except:
-		pass
-	f = open(filename,"aw")
+	f = open(filename,"w")
 	for entry in entries:
 		f.write("%s=%s;\n" % (entry.lower().strip(),entries[entry].strip()))
 def parselist(string,sep):
